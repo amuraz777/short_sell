@@ -49,13 +49,14 @@ if __name__ == '__main__':
     print(f" The top 5 HFs having the more position on differents issuer is: \n {' / '.join(df_top_5_hf['hedge_fund'].to_list())}")
 
     # What is the top 5 issuers having the highest median ratio ?
-    df_top_5_issuer = df_exclude[["issuer", "ratio"]].drop_duplicates().groupby("issuer").describe().sort_values(('ratio','50%'), ascending=False).head(5).reset_index()
+    df_top_5_issuer = df_exclude[["issuer", "ratio"]].groupby("issuer").describe().sort_values(('ratio','50%'), ascending=False).head(5).reset_index()
     print(df_top_5_issuer)
-    df_top_5_issuer = df_exclude[["issuer", "ratio"]].drop_duplicates().groupby("issuer").median().sort_values('ratio', ascending=False).head(5).reset_index()
+    df_top_5_issuer = df_exclude[["issuer", "ratio"]].groupby("issuer").median().sort_values('ratio', ascending=False).head(5).reset_index()
     print(df_top_5_issuer)
     print(f" The top 5 issuers having the highest median ratio is: \n {' / '.join(df_top_5_issuer['issuer'].to_list())}")
 
     # What is the maximal holding period for a short position ? What Hf ? What issuer ?
+    df_exclude = df_exclude.copy()
     df_exclude["end_position"] = df_exclude["end_position"].fillna(dt.datetime.today())
     df_exclude["holding_period"] = df_exclude.apply(lambda x: (x["end_position"] - x["start_position"]).days, axis=1)
     dict_longest_holding = df_exclude.sort_values("holding_period").to_dict('records')[-1]
